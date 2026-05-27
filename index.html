@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Glimpses-A glimpse into every mood</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+  <div class="noise"></div>
+
+  <header>
+    <div class="logo">🎵 Glimpses</div>
+    <p class="tagline">Tell us how you feel. We'll find the sound.</p>
+  </header>
+
+  <main>
+    <section class="mood-input-section">
+      <label for="moodInput">How are you feeling right now?</label>
+      <div class="input-row">
+        <textarea
+          id="moodInput"
+          placeholder="e.g. I feel nostalgic and a little melancholy... or happy and ready to dance!"
+          rows="3"
+        ></textarea>
+        <button id="findBtn" onclick="findPlaylist()">
+          <span id="btnText">Find My Vibe</span>
+          <span id="btnLoader" class="hidden">...</span>
+        </button>
+      </div>
+      <div class="mood-chips">
+        <span class="chip" onclick="setMood('happy and energetic')">😄 Happy</span>
+        <span class="chip" onclick="setMood('sad and reflective')">😢 Sad</span>
+        <span class="chip" onclick="setMood('focused and productive')">🧠 Study</span>
+        <span class="chip" onclick="setMood('romantic and warm')">❤️ Romantic</span>
+        <span class="chip" onclick="setMood('party and hype')">🎉 Party</span>
+        <span class="chip" onclick="setMood('fitness and workout')">Gym</span>
+      </div>
+    </section>
+
+    <section id="resultSection" class="result-section hidden">
+      <div class="result-header">
+        <div id="moodLabel" class="mood-label"></div>
+        <div id="moodDescription" class="mood-description"></div>
+      </div>
+
+      <div id="playlistGrid" class="playlist-grid">
+      </div>
+
+      <button class="reset-btn" onclick="resetPage()">← Try Another Mood</button>
+    </section>
+
+    <section id="errorSection" class="error-section hidden">
+      <p id="errorMsg">Something went wrong. Please try again.</p>
+      <button class="reset-btn" onclick="resetPage()">← Try Again</button>
+    </section>
+  </main>
+
+  <footer>
+    <p>Powered by <strong>Gemini AI</strong> + <strong>Spotify</strong> &nbsp;·&nbsp; Share this vibe with friends 🎧</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
