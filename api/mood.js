@@ -6,17 +6,10 @@ export default async function handler(req, res) {
 
   const { userMood } = req.body;
 
-  const prompt = `
-You are a music curator AI. A user has described their current mood as:
-"${userMood}"
+  const prompt = `You are a music curator AI. A user feels: "${userMood}"
 
-Return a JSON object with:
-- "moodTitle": A poetic 3–6 word title for this mood
-- "moodDescription": One atmospheric sentence under 20 words
-- "queries": Array of exactly 3 Spotify search queries, each in a different language/culture
-
-Only return valid JSON. No markdown, no extra text.
-`;
+Respond with ONLY a raw JSON object, no markdown, no backticks, no explanation:
+{"moodTitle":"...","moodDescription":"...","queries":["...","...","..."]}`;
 
   const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
@@ -26,14 +19,35 @@ Only return valid JSON. No markdown, no extra text.
     },
     body: JSON.stringify({
       model: "llama3-8b-8192",
-      messages: [{ role: "user", content: prompt }],
+      messages: [
+        {
+          role: "system",
+          content: "You are a JSON API. You only respond with raw JSON objects. Never use markdown or code blocks."
+        },
+        { role: "user", content: prompt }
+      ],
       temperature: 0.7,
     }),
   });
 
   const data = await groqRes.json();
-  const raw = data.choices?.[0]?.message?.content || "";
-  const cleaned = raw.replace(/```json|```/gi, "").trim();
 
-  res.status(200).json(JSON.parse(cleaned));
+  if (!groqRes.ok) {
+    return res.status(500).json({ error: data.error?.message || "Groq failed" });
+  }
+
+  const raw = data.choices?.[0]?.message?.content || "";
+  
+  // Extract JSON even if there's surrounding text
+  const match = raw.match(/\{[\s\S]*\}/);
+  if (!match) {
+    return res.status(500).json({ error: "No JSON found", raw });
+  }
+
+  try {
+    const parsed = JSON.parse(match[0]);
+    res.status(200).json(parsed);
+  } catch (e) {
+    res.status(500).json({ error: "Parse failed", raw });
+  }
 }
